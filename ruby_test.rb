@@ -6,8 +6,13 @@
 #          json or yaml serialized files with custom object mappings
 #          defined in the hiera common.yaml file
 
-
-require 'hiera'
+require 'fileutils'
+begin
+  require 'hiera'
+rescue LoadError
+  puts "You must have the hiera gem installed: gem install hiera"
+  exit 1
+end
 require 'json'
 require 'yaml'
 
@@ -19,13 +24,17 @@ end
 
 # lookups the list of env_scopes via hiera
 def env_scopes
-  @env_data || hiera.lookup('env_scopes', '', {})
+  @env_data || hiera.lookup(static_names['scopes'], '', {})
 end
 
 # lookups the map called output_object_files and returns a key/value pair
 # of map types and the designated output file
 def files
-  @files ||= hiera.lookup("output_object_files", '', {})
+  @files ||= hiera.lookup(static_names['object_files'], '', {})
+end
+
+def static_names
+  @static_names ||= hiera.lookup("static_names", '', {})
 end
 
 # write the given data to the given file name
@@ -45,23 +54,12 @@ end
 def generate_file(map_name, file_name)
   env_scopes.each do | scope_name, scope |
     data = {}
+    FileUtils.mkdir(scope_name) unless File.exists?(scope_name)
+    file_name_path = File.join(scope_name, file_name)
     obj_map = hiera.lookup(map_name, '', scope)
-    # The map object needs to be a hash
-    unless obj_map.instance_of?(Hash)
-      puts "#{map_name} is not a hash object"
-      exit 1
-    end
-    # performs a secondary lookup of the value in the obj_map
-    # ideally we should use hiera interpolation but that returns a string
-    # instead of a ruby object.  By looping through we can perform the same type
-    # of interpolation below.
-    obj_map.each do | name, key |
-      data[name] = hiera.lookup(key, '', scope)
-    end
-    write_data(file_name, data)
+    write_data(file_name_path, obj_map)
   end
 end
-
 
 # produces all the files identified in the output_object_files hash
 files.each { | map_name, file_name | generate_file(map_name, file_name) }

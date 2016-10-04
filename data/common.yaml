@@ -8,13 +8,23 @@ env_scopes:
     customer_env: environment_a
     datacenter: datacentera_a
 
-
+workflows: 'hello'
 # example map which is utilize in the output_object_files below
 giant_object_mapping:
-  workflows: 'workflows'
+  workflows: "%{alias('workflows')}"
 
 
 # the control source for generating map files
 # each file should have a corresponding map
 output_object_files:
   giant_object_mapping: 'giant_output_mapping.json'
+
+
+# a hash a static names that are used in the script
+# if you change the value of these you must also change map names above as well
+# You shoudn't need to customize this
+static_names:
+  # the name of the scope object you must define
+  scopes: env_scopes
+  # the name of the object files map you must define
+  object_files: output_object_files
