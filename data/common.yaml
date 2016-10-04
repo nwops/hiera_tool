@@ -1,0 +1,20 @@
+# don't use the hiera lookup interpolation in any values below
+
+
+# environment scopes where each type of file is produced from
+env_scopes:
+  env_1:
+    provisioning_env: prov_env_a
+    customer_env: environment_a
+    datacenter: datacentera_a
+
+
+# example map which is utilize in the output_object_files below
+giant_object_mapping:
+  workflows: 'workflows'
+
+
+# the control source for generating map files
+# each file should have a corresponding map
+output_object_files:
+  giant_object_mapping: 'giant_output_mapping.json'

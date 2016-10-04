@@ -1,0 +1,10 @@
+---
+:backends:
+  - yaml
+:hierarchy:
+  - "datacenter/%{datacenter}"
+  - "customer_env/%{customer_env}"
+  - "provisioning_env/%{provisioning_env}"
+  - common
+:yaml:
+  :datadir: "data"

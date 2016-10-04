@@ -1,0 +1,7 @@
+{
+  "workflows": {
+    "workflow_a": {
+      "url": "https://www.something.com"
+    }
+  }
+}
