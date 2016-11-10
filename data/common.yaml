@@ -2,14 +2,18 @@
 
 
 # environment scopes where each type of file is produced from
+# this scope is passed into hiera so that hiera can find the correct
+# values at the difference levels.  These scopes represent the variables
+# used with hiera.
 env_scopes:
   env_1:
     provisioning_env: prov_env_a
     customer_env: environment_a
     datacenter: datacentera_a
 
-workflows: 'hello'
 # example map which is utilize in the output_object_files below
+# this map is simple, in that it only looks up a single item
+# called 'workflows'.  
 giant_object_mapping:
   workflows: "%{alias('workflows')}"
 
