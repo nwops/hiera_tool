@@ -1,19 +1,18 @@
 require "hiser/version"
 require 'fileutils'
-begin
-  require 'hiera'
-rescue LoadError
-  puts "You must have the hiera gem installed: gem install hiera"
-  exit 1
-end
+require 'retrospec/plugins/v1/module_helpers'
+require 'hiera'
 require 'json'
 require 'yaml'
+require 'retrospec'
 
 module Hiser
   class Cli
+    include Retrospec::Plugins::V1::ModuleHelpers
 
-    def self.generate
-
+    def self.generate(path)
+      instance = Hiser::Cli.new
+      instance.generate_files(path)
     end
 
     def self.start
@@ -28,7 +27,17 @@ module Hiser
       end
     end
 
+    def generate_files(path, spec_object=nil)
+      safe_create_module_files(template_dir, path, spec_object)
+    end
+
     private
+
+    # returns the path to the templates
+    # looks inside the gem path templates directory
+    def template_dir
+      File.expand_path(File.join(File.dirname(File.dirname(__FILE__)), 'lib', 'templates'))
+    end
 
     # creates a new hiera object
     def hiera

@@ -1,5 +1,5 @@
 # don't use the hiera lookup interpolation in any values below
-
+# you must only use the alias function, otherwise a string is returned
 
 # environment scopes where each type of file is produced from
 # this scope is passed into hiera so that hiera can find the correct
@@ -36,7 +36,7 @@ output_object_files:
 # a hash a static settings that are used in the script
 # if you change the value of these you must also change map names above as well
 # do not change the key names, otherwise the script will fail
-# You shoudn't need to customize this
+# You shoud not need to customize this
 hiera_tool_settings:
   # the name of the scope object you must define
   scopes: env_scopes

@@ -7,7 +7,10 @@ ARGV << '-h' if ARGV.empty?  # sets help screen as default
 options = {}
 OptionParser.new do |opts|
   opts.program_name = 'Hiser'
-  #opts.on('-g', '--generate', 'Generate a hiser project') { options[:generate] = true }
+  opts.on('-g', '--generate PROJECT_PATH', 'Generate a hiser project with the given project path') do | path |
+    options[:generate] = true
+    options[:project_path] = path
+  end
   opts.on('-s', '--serialize', 'Create serialized files from hiera data') { options[:serialize] = true }
   opts.on('-h', '--help', 'Show help') { puts opts; exit }
   opts.version = Hiser::VERSION
@@ -15,7 +18,7 @@ OptionParser.new do |opts|
 end
 
 if options[:generate]
-  Hiser::Cli.generate
+  Hiser::Cli.generate(options[:project_path])
 elsif options[:serialize]
   Hiser::Cli.start
 end
