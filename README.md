@@ -1,41 +1,78 @@
-# Hiser
+# File Object Serialization Generator
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hiser`. To experiment with that code, run `bin/console` for an interactive prompt.
+Serializes any given object mapping to a file.  For ever scope defined a new
+file will be generated under a new directory for the scope.
 
-TODO: Delete this and the text above, and describe your gem
 
-## Installation
+## Setup
 
-Add this line to your application's Gemfile:
+### 1. Define the output_object_files map
+In the `common.yaml` file you need to define a new hash
+called `output_object_files`.  In this hash you should define
+a set of key/value pairs that tell the script which mapping to output
+to a file.  The value of the pair should should be the name of the file.
+The extension of the file `.json` or `.yaml` will determine which serialization
+to use when encoding the object.
 
-```ruby
-gem 'hiser'
+Example:
+
+```
+output_object_files:
+  giant_object_mapping: 'giant_output_mapping.json'
 ```
 
-And then execute:
+The script will loop through each mapping and generate a output file for each
+scope.
 
-    $ bundle
+### 2. Define the mappping of each object
+With the output_object_files map defined above we need to also create
+a map for each mapping we used in the `output_object_files` map.  This mapping
+is defined by you.  It should represent your data structure.  In the example below
+we map `workflows` to a `alias` function which causes hiera to interpolate the key
+by looking in the hierarchy for the key in order to return the value.
+and  the key
 
-Or install it yourself as:
+```
+workflows:
+  workflow_a:
+    url: 'https://www.something.com'
 
-    $ gem install hiser
+
+giant_object_mapping:
+  workflows: "%{alias('workflows')}"
+```
+
+Where the JSON output becomes
+
+```
+{
+  "workflows": {
+    "workflow_a": {
+      "url": "https://www.something.com"
+    }
+  }
+}
+```
+
+### 3. Create the scopes
+In order for hiera to correctly find the keys in the hierarchy we need to provide
+a scope for hiera to use.  This scope is defined by you and based on your hierarchical
+structure in `hiera.yaml`.  You should only defined keys in the scope for every
+variable you use in the `hiera.yaml` mapping and any other variables you might
+interpolate in hiera values.  This must be a hash with key/value pairs where the values
+must be strings.
+
+It is mandatory that the mapping name be called `env_scopes`
+
+```
+env_scopes:
+  env_1:
+    provisioning_env: prov_env_a
+    customer_env: environment_a
+    datacenter: datacentera_a
+```
+
 
 ## Usage
-
-TODO: Write usage instructions here
-
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/hiser. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
+To generate the serialized files just run the `ruby_test.rb` file which will generate
+all the files under the current local directory.
