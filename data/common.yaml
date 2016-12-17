@@ -9,26 +9,39 @@ env_scopes:
   env_1:
     provisioning_env: prov_env_a
     customer_env: environment_a
-    datacenter: datacentera_a
+    datacenter: datacenter_a
+  env_2:
+      provisioning_env: prov_env_b
+      customer_env: environment_b
+      datacenter: datacenter_b
 
 # example map which is utilize in the output_object_files below
 # this map is simple, in that it only looks up a single item
 # called 'workflows'.  
 giant_object_mapping:
   workflows: "%{alias('workflows')}"
+  special_info: "%{alias('special_info')}"
 
+
+special_data:
+  key1: "%{alias('key1')}"
 
 # the control source for generating map files
 # each file should have a corresponding map
 output_object_files:
-  giant_object_mapping: 'giant_output_mapping.json'
+  - giant_object_mapping: 'giant_output_mapping.json'
+  - special_data: 'vro_data.json'
 
 
-# a hash a static names that are used in the script
+# a hash a static settings that are used in the script
 # if you change the value of these you must also change map names above as well
+# do not change the key names, otherwise the script will fail
 # You shoudn't need to customize this
-static_names:
+hiera_tool_settings:
   # the name of the scope object you must define
   scopes: env_scopes
   # the name of the object files map you must define
   object_files: output_object_files
+  # the name of the directory to write files to
+  output_directory: output
+

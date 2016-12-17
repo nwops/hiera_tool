@@ -1,0 +1,5 @@
+workflows:
+  workflow_b:
+    url: 'https://www.something.com'
+
+key1: value2
